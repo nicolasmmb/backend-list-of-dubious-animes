@@ -2,14 +2,14 @@ package user
 
 import "backend/src/governance/error/user"
 
-type UserEntry struct {
+type CreateUserDTO struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
 	Avatar   string `json:"avatar"`
 }
 
-func (u UserEntry) Validate() error {
+func (u CreateUserDTO) Validate() error {
 	if u.Name == "" {
 		return user.ErrNameIsRequired
 	}
@@ -22,11 +22,10 @@ func (u UserEntry) Validate() error {
 	return nil
 }
 
-type UserOutput struct {
-	ID        string  `json:"id"`
-	Name      string  `json:"name"`
-	Email     string  `json:"email"`
-	CreatedAt string  `json:"created_at"`
-	UpdatedAt string  `json:"updated_at"`
-	DeletedAt *string `json:"deleted_at"`
+type CreateUserOutput struct {
+	ID        string `json:"id"`
+	Name      string `json:"name"`
+	Email     string `json:"email"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
 }

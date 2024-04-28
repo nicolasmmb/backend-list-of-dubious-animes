@@ -2,7 +2,11 @@ package user
 
 import (
 	"backend/libs/database/postgresql"
+	"backend/libs/response"
 	userCmd "backend/src/governance/command/user"
+	userEntity "backend/src/governance/entitiy/user"
+	"fmt"
+
 	"backend/src/governance/dto/user"
 
 	"net/http"
@@ -12,13 +16,15 @@ import (
 	"github.com/niko-labs/libs-go/uow"
 )
 
+const ROUTE_CREATE_USER = "/user"
+
 func CreateUser(c *gin.Context) {
-	var userEntry user.UserEntry
-	if err := c.ShouldBindJSON(&userEntry); err != nil {
+	var body user.CreateUserDTO
+	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	err := userEntry.Validate()
+	err := body.Validate()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -29,10 +35,10 @@ func CreateUser(c *gin.Context) {
 	bus := bus.GetGlobal()
 
 	result, err := bus.SendCommand(c.Request.Context(), userCmd.CommandCreateUser{
-		Name:     userEntry.Name,
-		Email:    userEntry.Email,
-		Password: userEntry.Password,
-		Avatar:   &userEntry.Avatar,
+		Name:     body.Name,
+		Email:    body.Email,
+		Password: body.Password,
+		Avatar:   &body.Avatar,
 	}, uow)
 
 	if err != nil {
@@ -40,7 +46,6 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	_ = result
-
-	c.JSON(http.StatusOK, gin.H{"message": "User created"})
+	r := result.(*userEntity.User)
+	c.JSON(http.StatusOK, response.OnlyIdAndMsg{Msg: fmt.Sprintf("O usuário %s foi criado com sucesso!", r.Name), ID: r.ID.String()})
 }

@@ -22,14 +22,9 @@ func init() {
 }
 
 func main() {
-	// gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
 
-	r.POST("/user", user.CreateUser)
-
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{"message": "pong"})
-	})
+	r.POST(user.ROUTE_CREATE_USER, user.CreateUser)
 
 	r.Run(GetServerAddr())
 }

@@ -3,7 +3,13 @@
 include .env
 
 build:
-	@go build -o ./bin/main ./main.go
+	@go build -o ./bin/main ./cmd/server/main.go
+
+run:
+	@go run ./cmd/server/main.go
+
+trace:
+	@go tool trace ./trace.out 
 
 docker:
 	@docker-compose -f ./.infra/docker-compose.yaml --env-file ./.env up -d

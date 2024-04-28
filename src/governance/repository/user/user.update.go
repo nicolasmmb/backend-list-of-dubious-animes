@@ -5,10 +5,10 @@ import (
 	"context"
 )
 
-func (r *RepositoryUser) CreateNewUser(ctx context.Context, user *user.User) (*user.User, error) {
+func (r *RepositoryUser) UpdateExistingUser(ctx context.Context, user *user.User) (*user.User, error) {
 	db := r.GetDB()
 
-	SQL := `INSERT INTO users (id, name, email, password, avatar) VALUES ($1, $2, $3, $4, $5) RETURNING id, updated_at::timestamp, created_at::timestamp`
+	SQL := `UPDATE users SET name = $2, email = $3, password = $4, avatar = $5 WHERE id = $1 RETURNING id;`
 
 	tx, err := db.Begin(ctx)
 	if err != nil {
