@@ -1,0 +1,23 @@
+version: "3"
+
+services:
+  database:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_PORT: ${DB_PORT}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+    ports:
+      - "${DB_PORT}:5432"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.2"
+          memory: 64M
+        reservations:
+          cpus: "0.1"
+          memory: 32M
+  
+
+  
