@@ -25,6 +25,7 @@ func main() {
 	r := gin.Default()
 
 	r.POST(user.ROUTE_CREATE_USER, user.CreateUser)
+	r.PUT(user.ROUTE_UPDATE_USER, user.UpdateUser)
 
 	r.Run(GetServerAddr())
 }
@@ -40,5 +41,6 @@ func GetServerAddr() string {
 func LoadBusHandlers() {
 	bus := bus.GetGlobal()
 	_ = bus.RegisterCommandHandler(userCmd.CommandCreateUser{}, userSrv.CommandCreateUser)
+	_ = bus.RegisterCommandHandler(userCmd.CommandUpdateUser{}, userSrv.CommandUpdateUser)
 
 }

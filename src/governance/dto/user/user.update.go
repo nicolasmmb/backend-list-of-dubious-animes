@@ -5,8 +5,8 @@ import "backend/src/governance/error/user"
 type UpdateUserDTO struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`
-	Password string `json:"password"`
 	Avatar   string `json:"avatar"`
+	Password string `json:"password"`
 }
 
 func (u UpdateUserDTO) Validate() error {
@@ -15,9 +15,6 @@ func (u UpdateUserDTO) Validate() error {
 	}
 	if u.Email == "" {
 		return user.ErrEmailIsRequired
-	}
-	if u.Password == "" {
-		return user.ErrPasswordIsRequired
 	}
 	return nil
 }

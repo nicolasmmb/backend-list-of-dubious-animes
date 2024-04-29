@@ -43,14 +43,13 @@ func WithPassword(password string) UserOptionUpdate {
 	}
 }
 
-func NewUser(name, email, password string, avatar *string) (*User, error) {
+func NewInstance(name, email, password string, avatar *string) (*User, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.MinCost)
 	if err != nil {
 		return nil, err
 	}
 
 	return &User{
-		ID:        uuid.New(),
 		Name:      name,
 		Email:     email,
 		Password:  string(hashedPassword),

@@ -6,4 +6,5 @@ var (
 	ErrNameIsRequired     = errors.New("name is required")
 	ErrEmailIsRequired    = errors.New("email is required")
 	ErrPasswordIsRequired = errors.New("password is required")
+	ErrIDIsRequired       = errors.New("id is required")
 )

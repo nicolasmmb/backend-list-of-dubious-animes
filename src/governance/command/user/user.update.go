@@ -1,6 +1,7 @@
 package user
 
 type CommandUpdateUser struct {
+	ID       string
 	Name     string
 	Email    string
 	Password string

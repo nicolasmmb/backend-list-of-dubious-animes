@@ -5,12 +5,11 @@ import (
 	"backend/libs/response"
 	userCmd "backend/src/governance/command/user"
 	"backend/src/governance/dto/user"
-	userEntity "backend/src/governance/entitiy/user"
-	"fmt"
 
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/niko-labs/libs-go/bus"
 	"github.com/niko-labs/libs-go/uow"
 )
@@ -18,6 +17,11 @@ import (
 const ROUTE_UPDATE_USER = "/user/:id"
 
 func UpdateUser(c *gin.Context) {
+	id := c.Param("id")
+	if id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "O id do usuário é obrigatório"})
+		return
+	}
 	var body user.UpdateUserDTO
 	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -34,6 +38,7 @@ func UpdateUser(c *gin.Context) {
 	bus := bus.GetGlobal()
 
 	result, err := bus.SendCommand(c.Request.Context(), userCmd.CommandUpdateUser{
+		ID:       id,
 		Name:     body.Name,
 		Email:    body.Email,
 		Password: body.Password,
@@ -44,6 +49,6 @@ func UpdateUser(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	r := result.(*userEntity.User)
-	c.JSON(http.StatusOK, response.OnlyIdAndMsg{Msg: fmt.Sprintf("O usuário %s foi atualizado com sucesso!", r.Name), ID: r.ID.String()})
+	r := result.(*uuid.UUID)
+	c.JSON(http.StatusOK, response.OnlyIdAndMsg{Msg: "O usuário foi atualizado com sucesso!", ID: r.String()})
 }

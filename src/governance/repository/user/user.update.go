@@ -3,19 +3,21 @@ package user
 import (
 	"backend/src/governance/entitiy/user"
 	"context"
+
+	"github.com/google/uuid"
 )
 
-func (r *RepositoryUser) UpdateExistingUser(ctx context.Context, user *user.User) (*user.User, error) {
+func (r *RepositoryUser) UpdateExistingUserById(ctx context.Context, id uuid.UUID, user *user.User) (*uuid.UUID, error) {
 	db := r.GetDB()
 
-	SQL := `UPDATE users SET name = $2, email = $3, password = $4, avatar = $5 WHERE id = $1 RETURNING id;`
+	SQL := `UPDATE users SET name = $2, email = $3, password = $4, avatar = $5 WHERE id = $1;`
 
 	tx, err := db.Begin(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	err = tx.QueryRow(ctx, SQL, user.ID, user.Name, user.Email, user.Password, user.Avatar).Scan(&user.ID, &user.UpdatedAt, &user.CreatedAt)
+	_, err = tx.Exec(ctx, SQL, id.String(), user.Name, user.Email, user.Password, user.Avatar)
 	if err != nil {
 		return nil, err
 	}
@@ -24,6 +26,5 @@ func (r *RepositoryUser) UpdateExistingUser(ctx context.Context, user *user.User
 	if err != nil {
 		return nil, err
 	}
-
-	return user, nil
+	return &id, nil
 }

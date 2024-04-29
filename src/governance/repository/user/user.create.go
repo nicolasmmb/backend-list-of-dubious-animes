@@ -8,14 +8,14 @@ import (
 func (r *RepositoryUser) CreateNewUser(ctx context.Context, user *user.User) (*user.User, error) {
 	db := r.GetDB()
 
-	SQL := `INSERT INTO users (id, name, email, password, avatar) VALUES ($1, $2, $3, $4, $5) RETURNING id;`
+	SQL := `INSERT INTO users (name, email, password, avatar) VALUES ($1, $2, $3, $4) RETURNING id;`
 
 	tx, err := db.Begin(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	err = tx.QueryRow(ctx, SQL, user.ID, user.Name, user.Email, user.Password, user.Avatar).Scan(&user.ID)
+	err = tx.QueryRow(ctx, SQL, user.Name, user.Email, user.Password, user.Avatar).Scan(&user.ID)
 	if err != nil {
 		return nil, err
 	}
