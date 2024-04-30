@@ -70,3 +70,7 @@ func (u *User) HasValidPassword(password string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
 	return err == nil
 }
+
+func (u *User) IsDeleted() bool {
+	return u.DeletedAt != nil
+}
