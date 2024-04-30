@@ -3,8 +3,10 @@ package user
 import (
 	"backend/src/governance/entitiy/user"
 	"context"
+	"errors"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 )
 
 func (r *RepositoryUser) GetUserByID(ctx context.Context, id uuid.UUID) (*user.User, error) {
@@ -16,8 +18,14 @@ func (r *RepositoryUser) GetUserByID(ctx context.Context, id uuid.UUID) (*user.U
 	row := db.QueryRow(ctx, SQL, id)
 
 	err := row.Scan(&user.ID, &user.Name, &user.Email, &user.Password, &user.Avatar, &user.CreatedAt, &user.UpdatedAt, &user.DeletedAt)
-	if err != nil {
+	switch err {
+	case nil:
+		return user, nil
+	case pgx.ErrNoRows:
+		return nil, errors.New("--> User not found")
+	case context.Canceled:
+		return nil, err
+	default:
 		return nil, err
 	}
-	return user, nil
 }

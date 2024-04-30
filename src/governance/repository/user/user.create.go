@@ -3,6 +3,7 @@ package user
 import (
 	"backend/src/governance/entitiy/user"
 	"context"
+	"errors"
 )
 
 func (r *RepositoryUser) CreateNewUser(ctx context.Context, user *user.User) (*user.User, error) {
@@ -21,9 +22,14 @@ func (r *RepositoryUser) CreateNewUser(ctx context.Context, user *user.User) (*u
 	}
 
 	err = tx.Commit(ctx)
-	if err != nil {
+	switch err {
+	case nil:
+		return user, nil
+	case context.Canceled:
+		tx.Rollback(ctx)
+		return nil, errors.New("--> Context canceled")
+	default:
+		tx.Rollback(ctx)
 		return nil, err
 	}
-
-	return user, nil
 }

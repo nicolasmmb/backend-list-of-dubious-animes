@@ -23,8 +23,14 @@ func (r *RepositoryUser) UpdateExistingUserById(ctx context.Context, id uuid.UUI
 	}
 
 	err = tx.Commit(ctx)
-	if err != nil {
+	switch err {
+	case nil:
+		return &id, nil
+	case context.Canceled:
+		tx.Rollback(ctx)
+		return nil, err
+	default:
+		tx.Rollback(ctx)
 		return nil, err
 	}
-	return &id, nil
 }
