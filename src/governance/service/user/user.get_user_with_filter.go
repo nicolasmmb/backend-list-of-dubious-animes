@@ -3,6 +3,7 @@ package user
 import (
 	userCmd "backend/src/governance/command/user"
 
+	userModel "backend/src/governance/models/user"
 	"context"
 
 	"github.com/niko-labs/libs-go/bus"
@@ -21,7 +22,20 @@ func CommandGetUserWithFilter(ctx context.Context, uow *uow.UnitOfWork, cmd bus.
 		return nil, err
 	}
 
-	pagination := paginator.CreatePaginationResponse("", &cmdData.Pagination, total, users)
+	var finalUsers []*userModel.BaseUserReturnModel
+	for _, user := range users {
+		finalUsers = append(finalUsers, userModel.ToBaseUserReturnModel(
+			user.ID,
+			user.Name,
+			user.Email,
+			user.Avatar,
+			user.CreatedAt,
+			user.UpdatedAt,
+			user.DeletedAt,
+		))
+	}
+
+	pagination := paginator.CreatePaginationResponse("", &cmdData.Pagination, total, finalUsers)
 
 	return pagination, nil
 }

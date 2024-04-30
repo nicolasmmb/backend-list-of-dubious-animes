@@ -2,14 +2,14 @@ package user
 
 import "backend/src/governance/error/user"
 
-type UpdateUserDTO struct {
+type UpdateUserModel struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`
 	Avatar   string `json:"avatar"`
 	Password string `json:"password"`
 }
 
-func (u UpdateUserDTO) Validate() error {
+func (u UpdateUserModel) Validate() error {
 	if u.Name == "" {
 		return user.ErrNameIsRequired
 	}

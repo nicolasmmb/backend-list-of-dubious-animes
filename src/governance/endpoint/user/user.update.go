@@ -4,7 +4,7 @@ import (
 	"backend/libs/database/postgresql"
 	"backend/libs/response"
 	userCmd "backend/src/governance/command/user"
-	"backend/src/governance/dto/user"
+	"backend/src/governance/models/user"
 
 	"net/http"
 
@@ -22,7 +22,7 @@ func UpdateUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "O id do usuário é obrigatório"})
 		return
 	}
-	var body user.UpdateUserDTO
+	var body user.UpdateUserModel
 	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

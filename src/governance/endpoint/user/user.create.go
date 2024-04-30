@@ -7,7 +7,7 @@ import (
 	userEntity "backend/src/governance/entitiy/user"
 	"fmt"
 
-	"backend/src/governance/dto/user"
+	"backend/src/governance/models/user"
 
 	"net/http"
 
@@ -19,7 +19,7 @@ import (
 const ROUTE_CREATE_USER = "/user"
 
 func CreateUser(c *gin.Context) {
-	var body user.CreateUserDTO
+	var body user.CreateUserModel
 	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
