@@ -9,11 +9,12 @@ import (
 
 type UserID uuid.UUID
 
+// remove Password field from json
 type User struct {
 	ID        uuid.UUID
 	Name      string
 	Email     string
-	Password  string
+	Password  string `json:"-"`
 	Avatar    *string
 	CreatedAt *time.Time
 	UpdatedAt *time.Time

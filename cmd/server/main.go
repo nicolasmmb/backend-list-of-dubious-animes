@@ -24,9 +24,10 @@ func init() {
 func main() {
 	r := gin.Default()
 
+	r.GET(user.ROUTE_USER_BY_ID, user.GetUserById)
+	r.GET(user.ROUTE_USER_WITH_FILTER, user.GetUserWithFilter)
 	r.POST(user.ROUTE_CREATE_USER, user.CreateUser)
 	r.PUT(user.ROUTE_UPDATE_USER, user.UpdateUser)
-	r.GET(user.ROUTE_USER_BY_ID, user.GetUserById)
 	r.DELETE(user.ROUTE_DELETE_USER_BY_ID, user.DeleteUserById)
 
 	r.Run(GetServerAddr())
@@ -46,4 +47,5 @@ func LoadBusHandlers() {
 	_ = bus.RegisterCommandHandler(userCmd.CommandUpdateUser{}, userSrv.CommandUpdateUser)
 	_ = bus.RegisterCommandHandler(userCmd.CommandGetUserById{}, userSrv.CommandGetUserById)
 	_ = bus.RegisterCommandHandler(userCmd.CommandDeleteUserById{}, userSrv.CommandDeleteUserById)
+	_ = bus.RegisterCommandHandler(userCmd.CommandGetUserWithFilter{}, userSrv.CommandGetUserWithFilter)
 }
