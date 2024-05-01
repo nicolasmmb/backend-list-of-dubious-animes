@@ -3,6 +3,7 @@ package user
 import (
 	"backend/libs/database/postgresql"
 	"backend/libs/response"
+	"backend/libs/tracer"
 	userCmd "backend/src/governance/command/user"
 	userEntity "backend/src/governance/entitiy/user"
 
@@ -17,6 +18,10 @@ import (
 const ROUTE_USER_BY_ID = "/user/:id"
 
 func GetUserById(c *gin.Context) {
+	t := tracer.GetTracer()
+	ctx, span := t.Start(c.Request.Context(), "GetUserById-New")
+	defer span.End()
+
 	_id := c.Param("id")
 	if _id == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "O id do usuário é obrigatório"})
@@ -32,7 +37,7 @@ func GetUserById(c *gin.Context) {
 	uow := uow.NewUnitOfWorkWithOptions(uow.WithConnection(db), uow.WithSchema("animes"))
 	bus := bus.GetGlobal()
 
-	result, err := bus.SendCommand(c.Request.Context(), userCmd.CommandGetUserById{ID: id}, uow)
+	result, err := bus.SendCommand(ctx, userCmd.CommandGetUserById{ID: id}, uow)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/exaring/otelpgx"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -25,6 +26,7 @@ func Connect() {
 	}
 	cfg.MaxConns = 32
 	cfg.MinConns = 8
+	cfg.ConnConfig.Tracer = otelpgx.NewTracer()
 
 	connection, err := pgxpool.NewWithConfig(context.Background(), cfg)
 	if err != nil {
