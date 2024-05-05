@@ -2,8 +2,11 @@ package main
 
 import (
 	"backend/libs/database/postgresql"
+	authCmd "backend/src/governance/command/auth"
 	userCmd "backend/src/governance/command/user"
+	auth "backend/src/governance/endpoint/auth"
 	user "backend/src/governance/endpoint/user"
+	authSrv "backend/src/governance/service/auth"
 	userSrv "backend/src/governance/service/user"
 
 	helpers "github.com/niko-labs/libs-go/helper"
@@ -49,6 +52,7 @@ func main() {
 	r.Use(otelgin.Middleware("backend-x"))
 	r.Use(middleware.AddTraceIdHeader())
 
+	auth.Routes(r)
 	user.Routes(r)
 
 	r.Run(GetServerAddr())
@@ -70,4 +74,5 @@ func LoadBusHandlers() {
 	_ = bus.RegisterCommandHandler(userCmd.CommandGetUserById{}, userSrv.CommandGetUserById)
 	_ = bus.RegisterCommandHandler(userCmd.CommandDeleteUserById{}, userSrv.CommandDeleteUserById)
 	_ = bus.RegisterCommandHandler(userCmd.CommandGetUserWithFilter{}, userSrv.CommandGetUserWithFilter)
+	_ = bus.RegisterCommandHandler(authCmd.CommandAuthValidateCredentials{}, authSrv.CommandAuthValidateCredentials)
 }
