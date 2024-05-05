@@ -8,6 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/niko-labs/libs-go/bus"
+	"github.com/niko-labs/libs-go/helper/opentel"
 	"github.com/niko-labs/libs-go/helper/paginator"
 	"github.com/niko-labs/libs-go/uow"
 )
@@ -21,11 +22,15 @@ func GetUserWithFilter(c *gin.Context) {
 		return
 	}
 
+	t := opentel.GetTracer()
+	ctx, span := t.Start(c.Request.Context(), "GetUserWithFilter")
+	defer span.End()
+
 	db := postgresql.GetConnection()
-	uow := uow.NewUnitOfWorkWithOptions(uow.WithConnection(db), uow.WithSchema("animes"))
+	uow := uow.NewUnitOfWorkWithOptions(db, uow.WithSchema("animes"), uow.WithTracer(t))
 	bus := bus.GetGlobal()
 
-	result, err := bus.SendCommand(c.Request.Context(), userCmd.CommandGetUserWithFilter{Pagination: *pageInfo}, uow)
+	result, err := bus.SendCommand(ctx, userCmd.CommandGetUserWithFilter{Pagination: *pageInfo}, uow)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

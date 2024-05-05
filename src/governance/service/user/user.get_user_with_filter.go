@@ -2,6 +2,7 @@ package user
 
 import (
 	userCmd "backend/src/governance/command/user"
+	"backend/src/governance/entitiy/user"
 
 	userModel "backend/src/governance/models/user"
 	"context"
@@ -23,6 +24,8 @@ func CommandGetUserWithFilter(ctx context.Context, uow *uow.UnitOfWork, cmd bus.
 	}
 
 	var finalUsers []*userModel.BaseUserReturnModel
+	trce := uow.GetTracer()
+	_, span := trce.Start(ctx, "Parse 'USERS' to 'BaseUserReturnModel'")
 	for _, user := range users {
 		finalUsers = append(finalUsers, userModel.ToBaseUserReturnModel(
 			user.ID,
@@ -34,8 +37,14 @@ func CommandGetUserWithFilter(ctx context.Context, uow *uow.UnitOfWork, cmd bus.
 			user.DeletedAt,
 		))
 	}
+	span.End()
+	// delete users
+	users = []*user.User{}
+	_ = users
 
+	_, span = trce.Start(ctx, "CreatePaginationResponse")
 	pagination := paginator.CreatePaginationResponse("", &cmdData.Pagination, total, finalUsers)
+	span.End()
 
 	return pagination, nil
 }

@@ -4,14 +4,13 @@ import (
 	"backend/libs/database/postgresql"
 	"backend/libs/response"
 	userCmd "backend/src/governance/command/user"
-	"context"
-	"time"
 
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/niko-labs/libs-go/bus"
+	"github.com/niko-labs/libs-go/helper/opentel"
 	"github.com/niko-labs/libs-go/uow"
 )
 
@@ -29,14 +28,15 @@ func DeleteUserById(c *gin.Context) {
 		return
 	}
 
+	t := opentel.GetTracer()
+	ctx, span := t.Start(c.Request.Context(), "DeleteUserById")
+	defer span.End()
+
 	db := postgresql.GetConnection()
-	uow := uow.NewUnitOfWorkWithOptions(uow.WithConnection(db), uow.WithSchema("animes"))
+	uow := uow.NewUnitOfWorkWithOptions(db, uow.WithSchema("animes"), uow.WithTracer(t))
 	bus := bus.GetGlobal()
 
-	ctxTimeout, cancel := context.WithTimeout(c.Request.Context(), 100*time.Millisecond)
-	defer cancel()
-
-	result, err := bus.SendCommand(ctxTimeout, userCmd.CommandDeleteUserById{ID: id}, uow)
+	result, err := bus.SendCommand(ctx, userCmd.CommandDeleteUserById{ID: id}, uow)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

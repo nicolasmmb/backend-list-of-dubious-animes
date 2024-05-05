@@ -13,12 +13,14 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/niko-labs/libs-go/bus"
+	"github.com/niko-labs/libs-go/helper/opentel"
 	"github.com/niko-labs/libs-go/uow"
 )
 
 const ROUTE_CREATE_USER = "/user"
 
 func CreateUser(c *gin.Context) {
+
 	var body user.CreateUserModel
 	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -29,9 +31,12 @@ func CreateUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	t := opentel.GetTracer()
+	ctx, span := t.Start(c.Request.Context(), "CreateUser")
+	defer span.End()
 
 	db := postgresql.GetConnection()
-	uow := uow.NewUnitOfWorkWithOptions(uow.WithConnection(db), uow.WithSchema("animes"))
+	uow := uow.NewUnitOfWorkWithOptions(db, uow.WithSchema("animes"), uow.WithTracer(t), uow.WithContext(ctx))
 	bus := bus.GetGlobal()
 
 	result, err := bus.SendCommand(c.Request.Context(), userCmd.CommandCreateUser{

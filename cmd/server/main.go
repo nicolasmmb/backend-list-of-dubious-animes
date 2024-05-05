@@ -5,6 +5,10 @@ import (
 	userCmd "backend/src/governance/command/user"
 	user "backend/src/governance/endpoint/user"
 	userSrv "backend/src/governance/service/user"
+
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
+
+	"context"
 	"log"
 
 	"os"
@@ -12,9 +16,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/niko-labs/libs-go/bus"
 	helpers "github.com/niko-labs/libs-go/helper"
+	"github.com/niko-labs/libs-go/helper/middleware"
+	"github.com/niko-labs/libs-go/helper/opentel"
 )
 
 func init() {
+
 	helpers.LoadEnv()
 	postgresql.Connect()
 	LoadBusHandlers()
@@ -22,7 +29,26 @@ func init() {
 }
 
 func main() {
+	baseCtx := context.Background()
+	err, exp := opentel.InitTracer(
+		opentel.NewTraceConfig(
+			"backend-x",
+			os.Getenv("OTLP_ENDPOINT"),
+			"https://opentelemetry.io/schemas/1.24.0",
+			os.Getenv("SERVICE_NAME"),
+			os.Getenv("SERVICE_VERSION"),
+			os.Getenv("SERVICE_NAMESPACE"),
+			os.Getenv("DEPLOYMENT_ENVIRONMENT"),
+		),
+	)
+	if err != nil {
+		log.Fatalf("failed to create OTLP exporter: %v", err)
+	}
+	defer exp.Shutdown(baseCtx)
+
 	r := gin.Default()
+	r.Use(otelgin.Middleware("backend-x"))
+	r.Use(middleware.AddTraceIdHeader())
 
 	r.GET(user.ROUTE_USER_BY_ID, user.GetUserById)
 	r.GET(user.ROUTE_USER_WITH_FILTER, user.GetUserWithFilter)
@@ -31,6 +57,7 @@ func main() {
 	r.DELETE(user.ROUTE_DELETE_USER_BY_ID, user.DeleteUserById)
 
 	r.Run(GetServerAddr())
+
 }
 
 func GetServerAddr() string {
