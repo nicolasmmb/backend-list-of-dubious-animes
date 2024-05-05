@@ -1,7 +1,7 @@
 package user
 
 import (
-	userCmd "backend/src/governance/command/user"
+	command "backend/src/governance/command/user"
 	"errors"
 
 	"context"
@@ -12,7 +12,7 @@ import (
 )
 
 func CommandDeleteUserById(ctx context.Context, uow *uow.UnitOfWork, cmd bus.CommandHandler) (data any, erro error) {
-	cmdData := cmd.Data().(*userCmd.CommandDeleteUserById)
+	cmdData := cmd.Data().(*command.CommandDeleteUserById)
 
 	repo := repository.NewRepositoryFromUoW(uow, &UserRepo)
 

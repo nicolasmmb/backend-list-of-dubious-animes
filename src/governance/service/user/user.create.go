@@ -1,8 +1,8 @@
 package user
 
 import (
-	userCmd "backend/src/governance/command/user"
-	userEntity "backend/src/governance/entitiy/user"
+	command "backend/src/governance/command/user"
+	entity "backend/src/governance/entity/user"
 
 	"context"
 
@@ -12,19 +12,19 @@ import (
 )
 
 func CommandCreateUser(ctx context.Context, uow *uow.UnitOfWork, cmd bus.CommandHandler) (data any, erro error) {
-	cmdData := cmd.Data().(*userCmd.CommandCreateUser)
+	cmdData := cmd.Data().(*command.CommandCreateUser)
 
-	newUser, err := userEntity.NewInstance(cmdData.Name, cmdData.Email, cmdData.Password, cmdData.Avatar)
+	user_instance, err := entity.NewInstance(cmdData.Name, cmdData.Email, cmdData.Password, cmdData.Avatar)
 	if err != nil {
 		return nil, err
 	}
 
 	repo := repository.NewRepositoryFromUoW(uow, &UserRepo)
 
-	newUser, err = repo.Queries.CreateNewUser(ctx, newUser)
+	user_instance, err = repo.Queries.CreateNewUser(ctx, user_instance)
 	if err != nil {
 		return nil, err
 	}
 
-	return newUser, nil
+	return user_instance, nil
 }

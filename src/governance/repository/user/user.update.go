@@ -1,13 +1,13 @@
 package user
 
 import (
-	"backend/src/governance/entitiy/user"
+	entity "backend/src/governance/entity/user"
 	"context"
 
 	"github.com/google/uuid"
 )
 
-func (r *RepositoryUser) UpdateExistingUserById(ctx context.Context, id uuid.UUID, user *user.User) (*uuid.UUID, error) {
+func (r *RepositoryUser) UpdateExistingUserById(ctx context.Context, id uuid.UUID, user *entity.User) (*uuid.UUID, error) {
 	db := r.GetDB()
 
 	SQL := `UPDATE users SET name = $2, email = $3, password = $4, avatar = $5 WHERE id = $1;`

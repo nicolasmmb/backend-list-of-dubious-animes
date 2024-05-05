@@ -1,7 +1,7 @@
 package user
 
 import (
-	"backend/src/governance/entitiy/user"
+	entity "backend/src/governance/entity/user"
 	"context"
 	"errors"
 
@@ -9,12 +9,12 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func (r *RepositoryUser) GetUserByID(ctx context.Context, id uuid.UUID) (*user.User, error) {
+func (r *RepositoryUser) GetUserByID(ctx context.Context, id uuid.UUID) (*entity.User, error) {
 	db := r.GetDB()
 
 	SQL := `SELECT id, name, email, password, avatar, created_at, updated_at, deleted_at FROM users WHERE id = $1`
 
-	user := &user.User{}
+	user := &entity.User{}
 	row := db.QueryRow(ctx, SQL, id)
 
 	err := row.Scan(&user.ID, &user.Name, &user.Email, &user.Password, &user.Avatar, &user.CreatedAt, &user.UpdatedAt, &user.DeletedAt)

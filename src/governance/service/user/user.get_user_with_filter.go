@@ -1,10 +1,10 @@
 package user
 
 import (
-	userCmd "backend/src/governance/command/user"
-	"backend/src/governance/entitiy/user"
+	command "backend/src/governance/command/user"
+	"backend/src/governance/entity/user"
 
-	userModel "backend/src/governance/models/user"
+	models "backend/src/governance/models/user"
 	"context"
 
 	"github.com/niko-labs/libs-go/bus"
@@ -14,7 +14,7 @@ import (
 )
 
 func CommandGetUserWithFilter(ctx context.Context, uow *uow.UnitOfWork, cmd bus.CommandHandler) (data any, erro error) {
-	cmdData := cmd.Data().(*userCmd.CommandGetUserWithFilter)
+	cmdData := cmd.Data().(*command.CommandGetUserWithFilter)
 
 	repo := repository.NewRepositoryFromUoW(uow, &UserRepo)
 
@@ -23,11 +23,11 @@ func CommandGetUserWithFilter(ctx context.Context, uow *uow.UnitOfWork, cmd bus.
 		return nil, err
 	}
 
-	var finalUsers []*userModel.BaseUserReturnModel
+	var finalUsers []*models.BaseUserReturnModel
 	trce := uow.GetTracer()
 	_, span := trce.Start(ctx, "Parse 'USERS' to 'BaseUserReturnModel'")
 	for _, user := range users {
-		finalUsers = append(finalUsers, userModel.ToBaseUserReturnModel(
+		finalUsers = append(finalUsers, models.ToBaseUserReturnModel(
 			user.ID,
 			user.Name,
 			user.Email,

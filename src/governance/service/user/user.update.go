@@ -1,8 +1,8 @@
 package user
 
 import (
-	userCmd "backend/src/governance/command/user"
-	userEntity "backend/src/governance/entitiy/user"
+	command "backend/src/governance/command/user"
+	entity "backend/src/governance/entity/user"
 
 	"context"
 
@@ -13,9 +13,9 @@ import (
 )
 
 func CommandUpdateUser(ctx context.Context, uow *uow.UnitOfWork, cmd bus.CommandHandler) (data any, erro error) {
-	cmdData := cmd.Data().(*userCmd.CommandUpdateUser)
+	cmdData := cmd.Data().(*command.CommandUpdateUser)
 
-	newUser, err := userEntity.NewInstance(
+	newUser, err := entity.NewInstance(
 		cmdData.Name,
 		cmdData.Email,
 		cmdData.Password,

@@ -1,13 +1,13 @@
 package user
 
 import (
-	"backend/src/governance/entitiy/user"
+	entity "backend/src/governance/entity/user"
 	"context"
 
 	"github.com/niko-labs/libs-go/helper/paginator"
 )
 
-func (r *RepositoryUser) GetUserWithFilter(ctx context.Context, pagination paginator.Pagination) ([]*user.User, *int, error) {
+func (r *RepositoryUser) GetUserWithFilter(ctx context.Context, pagination paginator.Pagination) ([]*entity.User, *int, error) {
 	db := r.GetDB()
 
 	SQL := `
@@ -39,11 +39,11 @@ func (r *RepositoryUser) GetUserWithFilter(ctx context.Context, pagination pagin
 		return nil, nil, err
 	}
 
-	users := []*user.User{}
+	users := []*entity.User{}
 	var total *int
 
 	for rows.Next() {
-		user := &user.User{}
+		user := &entity.User{}
 		err := rows.Scan(&user.ID, &user.Name, &user.Email, &user.Avatar, &user.CreatedAt, &user.UpdatedAt, &user.DeletedAt, &total)
 		if err != nil {
 			return nil, nil, err

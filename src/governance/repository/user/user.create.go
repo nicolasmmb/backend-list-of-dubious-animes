@@ -1,12 +1,12 @@
 package user
 
 import (
-	"backend/src/governance/entitiy/user"
+	entity "backend/src/governance/entity/user"
 	"context"
 	"errors"
 )
 
-func (r *RepositoryUser) CreateNewUser(ctx context.Context, user *user.User) (*user.User, error) {
+func (r *RepositoryUser) CreateNewUser(ctx context.Context, user *entity.User) (*entity.User, error) {
 	db := r.GetDB()
 
 	SQL := `INSERT INTO users (name, email, password, avatar) VALUES ($1, $2, $3, $4) RETURNING id;`
