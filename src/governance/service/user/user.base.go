@@ -1,9 +1,9 @@
 package user
 
 import (
-	userRepo "backend/src/governance/repository/user"
+	repo "backend/src/governance/repository/user"
 )
 
 var (
-	UserRepo userRepo.RepositoryUser
+	UserRepo repo.RepositoryUser
 )

@@ -3,7 +3,7 @@ package user
 import (
 	"backend/libs/database/postgresql"
 
-	userCmd "backend/src/governance/command/user"
+	command "backend/src/governance/command/user"
 
 	"net/http"
 
@@ -31,7 +31,7 @@ func GetUserWithFilter(c *gin.Context) {
 	uow := uow.NewUnitOfWorkWithOptions(db, uow.WithSchema("animes"), uow.WithTracer(t))
 	bus := bus.GetGlobal()
 
-	result, err := bus.SendCommand(ctx, userCmd.CommandGetUserWithFilter{Pagination: *pageInfo}, uow)
+	result, err := bus.SendCommand(ctx, command.CommandGetUserWithFilter{Pagination: *pageInfo}, uow)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

@@ -3,8 +3,8 @@ package user
 import (
 	"backend/libs/database/postgresql"
 	"backend/libs/response"
-	userCmd "backend/src/governance/command/user"
-	userEntity "backend/src/governance/entitiy/user"
+	command "backend/src/governance/command/user"
+	entity "backend/src/governance/entity/user"
 
 	"net/http"
 
@@ -38,15 +38,15 @@ func GetUserById(c *gin.Context) {
 	uow := uow.NewUnitOfWorkWithOptions(db, uow.WithSchema("animes"), uow.WithTracer(opentel.GetTracer()), uow.WithContext(ctx))
 	bus := bus.GetGlobal()
 
-	result, err := bus.SendCommand(ctx, userCmd.CommandGetUserById{ID: id}, uow)
+	result, err := bus.SendCommand(ctx, command.CommandGetUserById{ID: id}, uow)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	r := result.(*userEntity.User)
-	c.JSON(http.StatusOK, response.BaseResponse[userEntity.User]{
+	r := result.(*entity.User)
+	c.JSON(http.StatusOK, response.BaseResponse[entity.User]{
 		Item: *r,
 		Msg:  "Usuário encontrado com sucesso!",
 	})

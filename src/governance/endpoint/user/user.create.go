@@ -3,12 +3,12 @@ package user
 import (
 	"backend/libs/database/postgresql"
 	"backend/libs/response"
-	userCmd "backend/src/governance/command/user"
-	userEntity "backend/src/governance/entitiy/user"
-	"fmt"
+	command "backend/src/governance/command/user"
+	entity "backend/src/governance/entity/user"
 
 	"backend/src/governance/models/user"
 
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -39,7 +39,7 @@ func CreateUser(c *gin.Context) {
 	uow := uow.NewUnitOfWorkWithOptions(db, uow.WithSchema("animes"), uow.WithTracer(t), uow.WithContext(ctx))
 	bus := bus.GetGlobal()
 
-	result, err := bus.SendCommand(c.Request.Context(), userCmd.CommandCreateUser{
+	result, err := bus.SendCommand(c.Request.Context(), command.CommandCreateUser{
 		Name:     body.Name,
 		Email:    body.Email,
 		Password: body.Password,
@@ -51,6 +51,6 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	r := result.(*userEntity.User)
+	r := result.(*entity.User)
 	c.JSON(http.StatusOK, response.OnlyIdAndMsg{Msg: fmt.Sprintf("O usuário %s foi criado com sucesso!", r.Name), ID: r.ID.String()})
 }

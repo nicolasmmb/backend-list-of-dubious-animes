@@ -3,7 +3,7 @@ package user
 import (
 	"backend/libs/database/postgresql"
 	"backend/libs/response"
-	userCmd "backend/src/governance/command/user"
+	command "backend/src/governance/command/user"
 	"backend/src/governance/models/user"
 
 	"net/http"
@@ -42,7 +42,7 @@ func UpdateUser(c *gin.Context) {
 	uow := uow.NewUnitOfWorkWithOptions(db, uow.WithSchema("animes"), uow.WithTracer(t))
 	bus := bus.GetGlobal()
 
-	result, err := bus.SendCommand(ctx, userCmd.CommandUpdateUser{
+	result, err := bus.SendCommand(ctx, command.CommandUpdateUser{
 		ID:       id,
 		Name:     body.Name,
 		Email:    body.Email,
