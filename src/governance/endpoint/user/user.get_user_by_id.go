@@ -3,7 +3,6 @@ package user
 import (
 	"backend/libs/database/postgresql"
 	"backend/libs/response"
-	"backend/libs/tracer"
 	userCmd "backend/src/governance/command/user"
 	userEntity "backend/src/governance/entitiy/user"
 
@@ -12,15 +11,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/niko-labs/libs-go/bus"
+	"github.com/niko-labs/libs-go/helper/opentel"
 	"github.com/niko-labs/libs-go/uow"
 )
 
 const ROUTE_USER_BY_ID = "/user/:id"
 
 func GetUserById(c *gin.Context) {
-	t := tracer.GetTracer()
-	ctx, span := t.Start(c.Request.Context(), "GetUserById-New")
-	defer span.End()
 
 	_id := c.Param("id")
 	if _id == "" {
@@ -33,8 +30,12 @@ func GetUserById(c *gin.Context) {
 		return
 	}
 
+	t := opentel.GetTracer()
+	ctx, span := t.Start(c.Request.Context(), "GetUserById")
+	defer span.End()
+
 	db := postgresql.GetConnection()
-	uow := uow.NewUnitOfWorkWithOptions(uow.WithConnection(db), uow.WithSchema("animes"))
+	uow := uow.NewUnitOfWorkWithOptions(db, uow.WithSchema("animes"), uow.WithTracer(opentel.GetTracer()), uow.WithContext(ctx))
 	bus := bus.GetGlobal()
 
 	result, err := bus.SendCommand(ctx, userCmd.CommandGetUserById{ID: id}, uow)

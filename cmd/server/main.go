@@ -2,7 +2,6 @@ package main
 
 import (
 	"backend/libs/database/postgresql"
-	"backend/libs/tracer"
 	userCmd "backend/src/governance/command/user"
 	user "backend/src/governance/endpoint/user"
 	userSrv "backend/src/governance/service/user"
@@ -17,7 +16,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/niko-labs/libs-go/bus"
 	helpers "github.com/niko-labs/libs-go/helper"
-	"go.opentelemetry.io/otel"
+	"github.com/niko-labs/libs-go/helper/opentel"
 )
 
 func init() {
@@ -30,30 +29,21 @@ func init() {
 
 func main() {
 	baseCtx := context.Background()
-
-	exp, err := tracer.NewOTLPExporter(baseCtx)
-	// exp, err := tracer.NewConsoleExporter()
-
+	err, exp := opentel.InitTracer(
+		opentel.NewTraceConfig(
+			"backend-x",
+			os.Getenv("OTLP_ENDPOINT"),
+			"https://opentelemetry.io/schemas/1.24.0",
+			os.Getenv("SERVICE_NAME"),
+			os.Getenv("SERVICE_VERSION"),
+			os.Getenv("SERVICE_NAMESPACE"),
+			os.Getenv("DEPLOYMENT_ENVIRONMENT"),
+		),
+	)
 	if err != nil {
 		log.Fatalf("failed to create OTLP exporter: %v", err)
 	}
-
-	tp := tracer.NewTraceProvider(exp)
-	defer tp.Shutdown(baseCtx)
-
-	otel.SetTracerProvider(tp)
-
-	trcr := tp.Tracer("backend-x")
-	tracer.SaveTracer(trcr)
-
-	// _, span := trcr.Start(baseCtx, "main")
-	// for i := 0; i < 7; i++ {
-	// 	_, span := trcr.Start(baseCtx, "main"+fmt.Sprintf("%d", i))
-	// 	span.AddEvent("Event in the loop")
-	// 	span.End()
-	// }
-	// defer span.End()
-	// span.End()
+	defer exp.Shutdown(baseCtx)
 
 	r := gin.Default()
 	r.Use(otelgin.Middleware("backend-x"))
