@@ -6,18 +6,17 @@ import (
 	user "backend/src/governance/endpoint/user"
 	userSrv "backend/src/governance/service/user"
 
-	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
+	helpers "github.com/niko-labs/libs-go/helper"
 
 	"context"
 	"log"
-
 	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/niko-labs/libs-go/bus"
-	helpers "github.com/niko-labs/libs-go/helper"
 	"github.com/niko-labs/libs-go/helper/middleware"
 	"github.com/niko-labs/libs-go/helper/opentel"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 )
 
 func init() {
@@ -50,11 +49,7 @@ func main() {
 	r.Use(otelgin.Middleware("backend-x"))
 	r.Use(middleware.AddTraceIdHeader())
 
-	r.GET(user.ROUTE_USER_BY_ID, user.GetUserById)
-	r.GET(user.ROUTE_USER_WITH_FILTER, user.GetUserWithFilter)
-	r.POST(user.ROUTE_CREATE_USER, user.CreateUser)
-	r.PUT(user.ROUTE_UPDATE_USER, user.UpdateUser)
-	r.DELETE(user.ROUTE_DELETE_USER_BY_ID, user.DeleteUserById)
+	user.Routes(r)
 
 	r.Run(GetServerAddr())
 

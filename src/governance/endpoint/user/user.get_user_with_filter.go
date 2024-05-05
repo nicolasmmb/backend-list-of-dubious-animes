@@ -2,6 +2,7 @@ package user
 
 import (
 	"backend/libs/database/postgresql"
+
 	userCmd "backend/src/governance/command/user"
 
 	"net/http"
@@ -36,7 +37,6 @@ func GetUserWithFilter(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
 	// need to cast the result to DTO where user is the entity
 	c.JSON(http.StatusOK, result)
 }

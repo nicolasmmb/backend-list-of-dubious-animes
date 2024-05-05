@@ -33,6 +33,11 @@ func Connect() {
 		log.Fatal(err)
 	}
 
+	err = connection.Ping(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	dbPool = connection
 }
 
