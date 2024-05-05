@@ -11,14 +11,22 @@ func (r *RepositoryUser) GetUserWithFilter(ctx context.Context, pagination pagin
 	db := r.GetDB()
 
 	SQL := `
-	SELECT 
-		id, name, email, avatar, created_at, updated_at, deleted_at, 
-		COUNT(*) OVER() AS total 
-		FROM users 
-			WHERE 
-				deleted_at IS NULL 
-			ORDER BY 
-				name DESC
+		WITH user_counts AS (
+			SELECT COUNT(*) AS total_count
+			FROM users
+			WHERE deleted_at IS NULL
+		)
+		SELECT 
+			id, name, email, avatar, created_at, updated_at, deleted_at, 
+			total_count
+		FROM 
+			users
+		CROSS JOIN 
+			user_counts
+		WHERE 
+			deleted_at IS NULL
+		ORDER BY 
+			name DESC
 		LIMIT $1
 		OFFSET $2;
 	`
