@@ -1,6 +1,9 @@
 package user
 
-import "backend/src/governance/error/user"
+import (
+	"backend/src/governance/error/user"
+	"net/mail"
+)
 
 type CreateUserModel struct {
 	Name     string `json:"name"`
@@ -13,8 +16,8 @@ func (u CreateUserModel) Validate() error {
 	if u.Name == "" {
 		return user.ErrNameIsRequired
 	}
-	if u.Email == "" {
-		return user.ErrEmailIsRequired
+	if e, err := mail.ParseAddress(u.Email); err != nil || e.Address == "" {
+		return user.ErrEmailIsInvalid
 	}
 	if u.Password == "" {
 		return user.ErrPasswordIsRequired
