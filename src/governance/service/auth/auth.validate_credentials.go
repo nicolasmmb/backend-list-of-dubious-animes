@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"backend/libs/env"
 	command "backend/src/governance/command/auth"
 	"backend/src/governance/models/auth"
 	"time"
@@ -10,6 +11,7 @@ import (
 	"context"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 	"github.com/niko-labs/libs-go/bus"
 	"github.com/niko-labs/libs-go/repository"
 	"github.com/niko-labs/libs-go/uow"
@@ -51,16 +53,17 @@ func CommandAuthValidateCredentials(ctx context.Context, uow *uow.UnitOfWork, cm
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
 			"sub": user.ID.String(),
-			"exp": time.Now().Add(time.Hour * 24).Unix(),
+			"exp": time.Now().Add(time.Second * time.Duration(env.Data.JWT_EXPIRATION)).Unix(),
 		},
 	)
 
-	tokenString, err := token.SignedString([]byte("secret"))
+	tokenString, err := token.SignedString([]byte(env.Data.JWT_SECRET))
 	if err != nil {
 		span.AddEvent("Error generating token")
 		return nil, err
 	}
 	tk.AccessToken = tokenString
+	tk.RefreshToken = uuid.New().String()
 
 	return tk, nil
 }

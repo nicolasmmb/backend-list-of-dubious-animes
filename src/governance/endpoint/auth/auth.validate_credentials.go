@@ -16,8 +16,7 @@ import (
 
 const ROUTE_AUTH_USER = "/auth"
 
-func AutenticateUser(c *gin.Context) {
-
+func ValidateCredentials(c *gin.Context) {
 	var body auth.AuthUserModel
 	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -29,7 +28,7 @@ func AutenticateUser(c *gin.Context) {
 		return
 	}
 	t := opentel.GetTracer()
-	ctx, span := t.Start(c.Request.Context(), "route-autenticate-user")
+	ctx, span := t.Start(c.Request.Context(), "route.validate-credentials")
 	defer span.End()
 
 	db := postgresql.GetConnection()
