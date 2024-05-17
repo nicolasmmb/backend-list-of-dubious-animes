@@ -14,7 +14,7 @@ import (
 	"github.com/niko-labs/libs-go/uow"
 )
 
-const ROUTE_USER_WITH_FILTER = "/user"
+const ROUTE_USER_WITH_FILTER = "/"
 
 func GetUserWithFilter(c *gin.Context) {
 	pageInfo, err := paginator.Create(c)

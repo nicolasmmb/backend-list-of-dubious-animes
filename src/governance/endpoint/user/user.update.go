@@ -15,7 +15,7 @@ import (
 	"github.com/niko-labs/libs-go/uow"
 )
 
-const ROUTE_UPDATE_USER = "/user/:id"
+const ROUTE_UPDATE_USER = "/:id"
 
 func UpdateUser(c *gin.Context) {
 	id := c.Param("id")
