@@ -8,7 +8,7 @@ import (
 )
 
 func Routes(r *gin.Engine) {
-	g := r.Group("")
+	g := r.Group("/api/user")
 	g.Use(
 		middlewares.JwtValidate(env.Data.JWT_SECRET),
 	)

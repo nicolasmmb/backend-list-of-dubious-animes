@@ -14,7 +14,7 @@ import (
 	"github.com/niko-labs/libs-go/uow"
 )
 
-const ROUTE_DELETE_USER_BY_ID = "/user/:id"
+const ROUTE_DELETE_USER_BY_ID = "/:id"
 
 func DeleteUserById(c *gin.Context) {
 	_id := c.Param("id")

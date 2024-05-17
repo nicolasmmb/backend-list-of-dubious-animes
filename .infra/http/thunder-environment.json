@@ -1,0 +1,26 @@
+{
+    "clientName": "Thunder Client",
+    "environmentName": "dubious-anime",
+    "environmentId": "671e910c-6ab9-49ab-97dd-7b95369079ba",
+    "dateExported": "2024-05-16T15:18:06.633Z",
+    "version": "1.2",
+    "variables": [
+        {
+            "name": "server",
+            "value": "localhost:8899"
+        },
+        {
+            "name": "username",
+            "value": "NINO.ffffa70e-6c49-41a8-b34c-83e13d1a470d@mail.com"
+        },
+        {
+            "name": "password",
+            "value": "1234"
+        },
+        {
+            "name": "token",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTU1NjExNDMsInN1YiI6ImEyOWYzZDFhLTRjOTAtNGRkNC04MjJlLWIwZGJmN2JhZGU0OCJ9.Fo0f1gpaDGGfaL-vdSdEKO7VpX0zHzmXcy_34YydaIw"
+        }
+    ],
+    "ref": "xtrGD1SsGPwxrxlyfBECQdjvWHwnWe5iwjHkzd8uFYCk1C6xPNa0j8L3ZSU7U6r1"
+}

@@ -17,7 +17,7 @@ import (
 	"github.com/niko-labs/libs-go/uow"
 )
 
-const ROUTE_CREATE_USER = "/user"
+const ROUTE_CREATE_USER = "/"
 
 func CreateUser(c *gin.Context) {
 

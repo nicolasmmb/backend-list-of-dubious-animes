@@ -14,19 +14,15 @@ import (
 	"github.com/niko-labs/libs-go/uow"
 )
 
-const ROUTE_AUTH_USER = ""
+const ROUTE_AUTH_TOKEN_IS_VALID = "/token-is-valid"
 
-func ValidateCredentials(c *gin.Context) {
-	var body auth.AuthUserModel
+func TokenIsValid(c *gin.Context) {
+	var body auth.TokenIsValid
 	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	err := body.Validate()
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+
 	t := opentel.GetTracer()
 	ctx, span := t.Start(c.Request.Context(), "route.validate-credentials")
 	defer span.End()
@@ -35,9 +31,8 @@ func ValidateCredentials(c *gin.Context) {
 	uow := uow.NewUnitOfWorkWithOptions(db, uow.WithSchema("animes"), uow.WithTracer(t), uow.WithContext(ctx))
 	bus := bus.GetGlobal()
 
-	result, err := bus.SendCommand(c.Request.Context(), command.CommandAuthValidateCredentials{
-		Email:    body.Email,
-		Password: body.Password,
+	result, err := bus.SendCommand(c.Request.Context(), command.CommandTokenIsValid{
+		AccessToken: body.AccessToken,
 	}, uow)
 
 	if err != nil {

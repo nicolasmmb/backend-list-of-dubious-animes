@@ -15,7 +15,7 @@ import (
 	"github.com/niko-labs/libs-go/uow"
 )
 
-const ROUTE_USER_BY_ID = "/user/:id"
+const ROUTE_USER_BY_ID = "/:id"
 
 func GetUserById(c *gin.Context) {
 

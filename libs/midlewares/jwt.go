@@ -10,9 +10,6 @@ import (
 
 func JwtValidate(secret string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// t := opentel.GetTracer()
-		// _, span := t.Start(c.Request.Context(), "route.validate-credentials")
-		// defer span.End()
 		token := c.GetHeader("Authorization")
 		if token == "" {
 			c.JSON(401, gin.H{"error": "Token is required"})

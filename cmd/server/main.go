@@ -3,6 +3,7 @@ package main
 import (
 	"backend/libs/database/postgresql"
 	"backend/libs/env"
+	middlewares "backend/libs/midlewares"
 	authCmd "backend/src/governance/command/auth"
 	userCmd "backend/src/governance/command/user"
 	auth "backend/src/governance/endpoint/auth"
@@ -31,6 +32,7 @@ func init() {
 }
 
 func main() {
+
 	baseCtx := context.Background()
 	err, exp := opentel.InitTracer(
 		opentel.NewTraceConfig(
@@ -52,6 +54,15 @@ func main() {
 	r := gin.Default()
 	r.Use(otelgin.Middleware("backend-x"))
 	r.Use(middleware.AddTraceIdHeader())
+	r.Use(middlewares.Headers(
+		middlewares.HeadersConfig{
+			AllowOrigins:     "*",
+			AllowMethods:     "*",
+			AllowHeaders:     "*",
+			AllowCredentials: true,
+		},
+	))
+	r.Use(middlewares.IgnoreOPTIONS())
 
 	auth.Routes(r)
 	user.Routes(r)
@@ -63,10 +74,13 @@ func main() {
 
 func LoadBusHandlers() {
 	bus := bus.GetGlobal()
+	// user
 	_ = bus.RegisterCommandHandler(userCmd.CommandCreateUser{}, userSrv.CommandCreateUser)
 	_ = bus.RegisterCommandHandler(userCmd.CommandUpdateUser{}, userSrv.CommandUpdateUser)
 	_ = bus.RegisterCommandHandler(userCmd.CommandGetUserById{}, userSrv.CommandGetUserById)
 	_ = bus.RegisterCommandHandler(userCmd.CommandDeleteUserById{}, userSrv.CommandDeleteUserById)
 	_ = bus.RegisterCommandHandler(userCmd.CommandGetUserWithFilter{}, userSrv.CommandGetUserWithFilter)
+	// auth
+	_ = bus.RegisterCommandHandler(authCmd.CommandTokenIsValid{}, authSrv.CommandTokenIsValid)
 	_ = bus.RegisterCommandHandler(authCmd.CommandAuthValidateCredentials{}, authSrv.CommandAuthValidateCredentials)
 }
