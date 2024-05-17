@@ -52,8 +52,9 @@ func CommandAuthValidateCredentials(ctx context.Context, uow *uow.UnitOfWork, cm
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
-			"sub": user.ID.String(),
-			"exp": time.Now().Add(time.Second * time.Duration(env.Data.JWT_EXPIRATION)).Unix(),
+			"sub":   user.ID.String(),
+			"email": user.Email,
+			"exp":   time.Now().Add(time.Second * time.Duration(env.Data.JWT_EXPIRATION)).Unix(),
 		},
 	)
 
